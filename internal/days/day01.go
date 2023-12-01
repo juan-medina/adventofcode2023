@@ -23,7 +23,9 @@
 package days
 
 import (
-	"strings"
+	"errors"
+	"fmt"
+	"strconv"
 
 	"github.com/juan-medina/adventofcode2023/internal/structs"
 )
@@ -36,15 +38,81 @@ func (obj Day01) Run(day int, part int, test bool) error {
 	return obj.BasicSolver.BasicRun(obj, day, part, test)
 }
 
-func (obj Day01) Solve (input []string, part int) ([]string, error) {
-	result := [] string {}
-	for i := range input {
-		s := input[i]
-		if (i%2!=0) || part == 1{
-			s = strings.ToUpper(s)
-		}		
-		result = append(result, s)
+var stringDigits = map[string]int {
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
+
+func getNumber(line string, index int) (int, error) {
+	lineLength := len(line)
+	digit := line[index]
+	if digit >= '0' && digit <= '9' {
+		return int(digit - '0'), nil
 	}
+
+	for key := range stringDigits {		
+		keyLength := len(key)
+		lastIndex := index+keyLength		
+
+		if (lastIndex) < lineLength {
+			token := line[index:lastIndex]
+			if token == key {
+				return stringDigits[key], nil
+			}
+		}
+	}
+
+	return 0, errors.New("no number found")
+}
+
+func findFirstDigit(line string) int {
+	for i := range line {
+		number, err := getNumber(line, i)
+		if err== nil {
+			return number
+		}
+	}
+	return 0
+}
+
+func findLastDigit(line string) int {
+	len := len(line)
+	for i := range line {
+		number, err := getNumber(line, len-i-1)
+		if err== nil {
+			return number
+		}
+	}
+
+	return 0
+}
+
+func (obj Day01) Solve(input []string, part int) ([]string, error) {
+	result := []string{}
+
+	total := 0
+	for i := range input {
+
+		line := input[i]
+		first := findFirstDigit(line)
+		last := findLastDigit(line)
+		totalLine := (first * 10) + last
+
+		fmt.Printf("%3d %s\n", totalLine, line)
+
+		total = total + totalLine
+	}
+
+	fmt.Println()
+
+	result = append(result, strconv.Itoa(total))
 
 	return result, nil
 }
