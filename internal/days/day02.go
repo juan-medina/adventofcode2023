@@ -109,7 +109,7 @@ var maxBallsPerGame = map[string]int{
 	"blue":  14,
 }
 
-func countGame(game ballGame) int {
+func countValidGame(game ballGame) int {
 	for i := range game.bagDraw {
 		draws := game.bagDraw[i]
 
@@ -128,6 +128,59 @@ func countGame(game ballGame) int {
 	return game.id
 }
 
+func part1Solution(games []ballGame) int {
+	total := 0
+	for i := range games {
+		total = total + countValidGame(games[i])
+	}
+
+	return total
+}
+
+func gamePower(game ballGame) int {
+
+	var maxBallsInGame = map[string]int{
+		"red":   0,
+		"green": 0,
+		"blue":  0,
+	}
+
+	for i := range game.bagDraw {
+		draws := game.bagDraw[i]
+
+		for j := range draws {
+			draw := draws[j]
+
+			if draw.balls > maxBallsInGame[draw.color] {
+				maxBallsInGame[draw.color] = draw.balls
+			}
+		}
+	}
+
+	fmt.Printf("game: %v has", game.id)
+
+	total := 1
+	for j := range maxBallsInGame {
+		max := maxBallsInGame[j]
+		total = total * maxBallsInGame[j]
+		fmt.Printf(" %v %v balls", max, j)
+	}
+
+	fmt.Printf(" = %v power\n", total)
+
+	return total
+}
+
+func part2Solution(games []ballGame) int {
+	total := 0
+
+	for i := range games {
+		total = total + gamePower(games[i])
+	}
+
+	return total
+}
+
 func (obj Day02) Solve(input []string, part int) ([]string, error) {
 	games := []ballGame{}
 	result := []string{}
@@ -139,8 +192,10 @@ func (obj Day02) Solve(input []string, part int) ([]string, error) {
 	}
 
 	total := 0
-	for i := range games {
-		total = total + countGame(games[i])
+	if part == 1 {
+		total = part1Solution(games)
+	} else {
+		total = part2Solution(games)
 	}
 
 	result = append(result, strconv.Itoa(total))
