@@ -30,8 +30,29 @@ GOVET=$(GOCMD) vet
 GOMOD=$(GOCMD) mod
 BUILD_DIR=build
 SCRIPTS_DIR=scripts
+
 BINARY_NAME=$(BUILD_DIR)/adventofcode2023
+
+ifeq ($(OS),Windows_NT)
+	BINARY_NAME=$(BUILD_DIR)/adventofcode2023.exe
+else
+	BINARY_NAME=$(BUILD_DIR)/adventofcode2023
+endif	
+
 APP_PATH="./internal/app"
+
+#ARGS
+
+DAY=1
+PART=1
+TEST=false
+
+ifeq ($(TEST),true)
+	TESTARG="--test"
+else
+	TESTARG=""
+endif
+
 default: build
 
 build: clean
@@ -43,7 +64,7 @@ clean:
 format:
 	$(GOFORMAT) $(APP_PATH)/...
 run: build
-	./$(BINARY_NAME)
+	./$(BINARY_NAME) -day $(DAY) -part $(PART) $(TESTARG)
 update:
 	$(GOGET) -u all
 	$(GOMOD) tidy
