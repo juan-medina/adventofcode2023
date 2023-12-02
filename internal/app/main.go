@@ -47,6 +47,7 @@ func main() {
 
 	examples := []structs.DaySolver{
 		days.Day01{},
+		days.Day02{},
 	}
 
 	if *day > len(examples) {

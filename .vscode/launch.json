@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/internal/app",
-            "args": ["-day", "1", "-part", "2"],
+            "args": ["-day", "2", "-part", "1"],
             "cwd": "${workspaceFolder}"
         }
     ]
