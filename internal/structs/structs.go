@@ -23,13 +23,14 @@
 package structs
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/juan-medina/adventofcode2023/internal/utils"
 )
 
 type DaySolver interface {
-	Run(day int, part int, test bool) error	
+	Run(day int, part int, test bool) error
 }
 
 type Solver interface {
@@ -43,32 +44,33 @@ type BasicSolver struct {
 func (obj BasicSolver) BasicRun(solver Solver, day int, part int, test bool) error {
 	inputData, err := utils.GetFile(day, part, test, "input")
 
-	if err!= nil {
+	if err != nil {
 		return err
 	}
-	
+
 	utils.OutputStringSlice("input data:", inputData)
 
 	solved, err := solver.Solve(inputData, part)
-	if err== nil {
+	if err == nil {
 		utils.OutputStringSlice("solution:", solved)
 
 		if test {
 			solutionData, err := utils.GetFile(day, part, test, "solution")
-	
-			if err!= nil {
+
+			if err != nil {
 				return err
 			}
-		
+
 			if !utils.CompareStringSlices(solved, solutionData) {
 				fmt.Println("error in the solution")
 				utils.OutputStringSlice("expected solution:", solutionData)
-			}else {
+				return errors.New("solution is not correct")
+			} else {
 				fmt.Println("solution is correct")
 			}
 		}
-	
+
 	}
-		
+
 	return err
 }

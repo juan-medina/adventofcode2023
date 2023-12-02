@@ -25,8 +25,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
-	"github.com/juan-medina/adventofcode2023/internal/days"
+	"github.com/juan-medina/adventofcode2023/internal/days/Day01"
+	"github.com/juan-medina/adventofcode2023/internal/days/Day02"
 	"github.com/juan-medina/adventofcode2023/internal/structs"
 )
 
@@ -46,8 +48,8 @@ func main() {
 	var example structs.DaySolver = nil
 
 	examples := []structs.DaySolver{
-		days.Day01{},
-		days.Day02{},
+		Day01.New(),
+		Day02.New(),
 	}
 
 	if *day > len(examples) {
@@ -66,5 +68,6 @@ func main() {
 	err := example.Run(*day, *part, *test)
 	if err != nil {
 		fmt.Printf("error running example : %v", err.Error())
+		os.Exit(1)
 	}
 }

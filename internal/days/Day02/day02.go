@@ -20,7 +20,7 @@
  *  THE SOFTWARE.
  */
 
-package days
+package Day02
 
 import (
 	"fmt"
@@ -201,4 +201,8 @@ func (obj Day02) Solve(input []string, part int) ([]string, error) {
 	result = append(result, strconv.Itoa(total))
 
 	return result, nil
+}
+
+func New() Day02 {
+	return Day02{}	
 }
