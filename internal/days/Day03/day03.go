@@ -24,7 +24,13 @@ func (obj Day03) Solve(input []string, part int) ([]string, error) {
 
 	e := getEngine(input)
 
-	total := sumOfParts(e)
+	total := 0
+
+	if part == 1 {
+		total = sumOfParts(e)
+	} else {
+		total = gearRatio(e)
+	}
 
 	result = append(result, strconv.Itoa(total))
 
@@ -42,9 +48,14 @@ type possibleNumber struct {
 	value int
 }
 
+type symbol struct {
+	element
+	char byte
+}
+
 type engine struct {
 	elements []possibleNumber
-	symbols  []element
+	symbols  []symbol
 }
 
 func getEngine(lines []string) engine {
@@ -56,16 +67,18 @@ func getEngine(lines []string) engine {
 	return e
 }
 
-func getSymbols(lines []string) []element {
-	s := []element{}
+func getSymbols(lines []string) []symbol {
+	s := []symbol{}
 
 	for i := range lines {
 		for j := range lines[i] {
 			c := lines[i][j]
 			if isSymbol(c) {
-				e := element{
+				e := symbol{element: element{
 					row: i,
 					col: j,
+				},
+					char: c,
 				}
 				s = append(s, e)
 			}
@@ -96,9 +109,9 @@ func sumOfParts(e engine) int {
 		p := e.elements[i]
 		for j := range e.symbols {
 			s := e.symbols[j]
-			v = adjacent(p, s)
+			v = adjacent(p, s.element)
 			if v {
-				fmt.Printf("element %v (%v,%v) collide with symbol at (%v,%v)\n", p.value, p.star.row, p.star.col, s.row, s.col)
+				fmt.Printf("element %v (%v,%v) collide with symbol '%v'at (%v,%v)\n", p.value, p.star.row, p.star.col, string(s.char), s.row, s.col)
 				break
 			}
 		}
@@ -111,6 +124,32 @@ func sumOfParts(e engine) int {
 
 	}
 
+	return total
+}
+
+func gearRatio(e engine) int {
+
+	total := 0
+	for i := range e.symbols {
+
+		s := e.symbols[i]
+
+		if s.char == '*' {
+			totalParts := 0
+			ratio := 1
+			for j := range e.elements {
+				p := e.elements[j]
+				if adjacent(p, s.element) {
+					totalParts = totalParts + 1
+					ratio = ratio * p.value
+					if totalParts == 2 {
+						total += ratio
+						break
+					}
+				}
+			}
+		}
+	}
 	return total
 }
 
