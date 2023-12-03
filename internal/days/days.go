@@ -20,45 +20,17 @@
  *  THE SOFTWARE.
  */
 
-package main
+package Days
 
 import (
-	"flag"
-	"fmt"
-	"os"
-
-	Days "github.com/juan-medina/adventofcode2023/internal/days"
+	"github.com/juan-medina/adventofcode2023/internal/days/Day01"
+	"github.com/juan-medina/adventofcode2023/internal/days/Day02"
+	"github.com/juan-medina/adventofcode2023/internal/structs"
 )
 
-func main() {
-
-	day := flag.Int("day", 0, "what day to run")
-	part := flag.Int("part", 1, "what part to run 1 or 2")
-	test := flag.Bool("test", false, "test or normal run")
-
-	flag.Parse()
-
-	if *day == 0 || *part < 1 || *part > 2 {
-		flag.Usage()
-		return
-	}
-
-	days := Days.New()
-
-	if *day > len(days) {
-		fmt.Printf("No enough examples implement for running day: %d", *day)
-		return
-	}
-
-	if *test {
-		fmt.Printf("running : day: %v [part: %v] TEST\n", *day, *part)
-	} else {
-		fmt.Printf("running : day: %v [part: %v]\n", *day, *part)
-	}
-
-	err := days[*day-1].Run(*day, *part, *test)
-	if err != nil {
-		fmt.Printf("error running example : %v", err.Error())
-		os.Exit(1)
+func New() []structs.DaySolver {
+	return []structs.DaySolver{
+		Day01.New(),
+		Day02.New(),
 	}
 }
