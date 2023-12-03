@@ -143,6 +143,7 @@ func gearRatio(e engine) int {
 					totalParts = totalParts + 1
 					ratio = ratio * p.value
 					if totalParts == 2 {
+						fmt.Printf("gear at (%v,%v) has a ratio of: %v\n", s.row, s.col, ratio)
 						total += ratio
 						break
 					}
@@ -162,7 +163,7 @@ func adjacent(p possibleNumber, s element) bool {
 		}
 	}
 
-	// up row
+	// up or bottom row, should be on the line +-1
 	if s.row == p.star.row-1 || s.row == p.star.row+1 {
 		if s.col >= p.star.col-1 && s.col <= p.end.col+1 {
 			return true
