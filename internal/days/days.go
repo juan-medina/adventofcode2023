@@ -26,6 +26,7 @@ import (
 	"github.com/juan-medina/adventofcode2023/internal/days/Day01"
 	"github.com/juan-medina/adventofcode2023/internal/days/Day02"
 	"github.com/juan-medina/adventofcode2023/internal/days/Day03"
+	"github.com/juan-medina/adventofcode2023/internal/days/Day04"
 	"github.com/juan-medina/adventofcode2023/internal/structs"
 )
 
@@ -34,5 +35,6 @@ func New() []structs.DaySolver {
 		Day01.New(),
 		Day02.New(),
 		Day03.New(),
+		Day04.New(),
 	}
 }
