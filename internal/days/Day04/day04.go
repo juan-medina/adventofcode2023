@@ -39,22 +39,22 @@ func (obj Day04) Solve(input []string, part int) ([]string, error) {
 }
 
 func getScore(g game) int {
-	total := 0
+	t := 0
 
 	for i := range g {
-		wins := getTotalWin(g[i])
-		if wins >= 2 {
-			wins = int(math.Pow(2.0, float64(wins-1)))
+		w := getTotalWin(g[i])
+		if w >= 2 {
+			w = int(math.Pow(2.0, float64(w-1)))
 		}
-		fmt.Printf(" = %v points\n", wins)
-		total = total + wins
+		fmt.Printf(" = %v points\n", w)
+		t = t + w
 	}
 
-	return total
+	return t
 }
 
 func getTotalCards(g game) int {
-	total := 0
+	t := 0
 	m := len(g)
 
 	for i := range g {
@@ -62,8 +62,8 @@ func getTotalCards(g game) int {
 		fmt.Println()
 
 		f := i + 1
-		limit := min(f+wins, m)
-		for j := f; j < limit; j++ {
+		l := min(f+wins, m)
+		for j := f; j < l; j++ {
 			a := g[i].total
 			fmt.Printf("adding %v cards to %v\n", a, j+1)
 			g[j].total += a
@@ -72,14 +72,14 @@ func getTotalCards(g game) int {
 
 	for i := range g {
 		fmt.Printf("card %v has %v total\n", g[i].id, g[i].total)
-		total += g[i].total
+		t += g[i].total
 	}
 
-	return total
+	return t
 }
 
 func getTotalWin(s scratchCard) int {
-	total := 0
+	t := 0
 
 	fmt.Printf("Card %v winning numbers: ", s.id)
 	for i := range s.play {
@@ -87,18 +87,18 @@ func getTotalWin(s scratchCard) int {
 		for j := range s.winning {
 			w := s.winning[j]
 			if n == w {
-				total = total + 1
+				t = t + 1
 				fmt.Printf("%v ", j)
 				break
 			}
 		}
 	}
-	if total == 0 {
+	if t == 0 {
 		fmt.Printf("none ")
 	}
-	fmt.Printf("= %v wins", total)
+	fmt.Printf("= %v wins", t)
 
-	return total
+	return t
 }
 
 func getGame(input []string) game {
