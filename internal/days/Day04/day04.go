@@ -2,6 +2,7 @@ package Day04
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,12 @@ func (obj Day04) Solve(input []string, part int) ([]string, error) {
 
 	g := getGame(input)
 
-	t := getScore(g)
+	t := 0
+	if part == 1 {
+		t = getScore(g)
+	} else {
+		t = getTotalCards(g)
+	}
 
 	result = append(result, strconv.Itoa(t))
 
@@ -36,13 +42,43 @@ func getScore(g game) int {
 	total := 0
 
 	for i := range g {
-		total = total + getCardScore(g[i])
+		wins := getTotalWin(g[i])
+		if wins >= 2 {
+			wins = int(math.Pow(2.0, float64(wins-1)))
+		}
+		fmt.Printf(" = %v points\n", wins)
+		total = total + wins
 	}
 
 	return total
 }
 
-func getCardScore(s scratchCard) int {
+func getTotalCards(g game) int {
+	total := 0
+	m := len(g)
+
+	for i := range g {
+		wins := getTotalWin(g[i])
+		fmt.Println()
+
+		f := i + 1
+		limit := min(f+wins, m)
+		for j := f; j < limit; j++ {
+			a := g[i].total
+			fmt.Printf("adding %v cards to %v\n", a, j+1)
+			g[j].total += a
+		}
+	}
+
+	for i := range g {
+		fmt.Printf("card %v has %v total\n", g[i].id, g[i].total)
+		total += g[i].total
+	}
+
+	return total
+}
+
+func getTotalWin(s scratchCard) int {
 	total := 0
 
 	fmt.Printf("Card %v winning numbers: ", s.id)
@@ -51,11 +87,7 @@ func getCardScore(s scratchCard) int {
 		for j := range s.winning {
 			w := s.winning[j]
 			if n == w {
-				if total == 0 {
-					total = 1
-				} else {
-					total = total + total
-				}
+				total = total + 1
 				fmt.Printf("%v ", j)
 				break
 			}
@@ -64,7 +96,7 @@ func getCardScore(s scratchCard) int {
 	if total == 0 {
 		fmt.Printf("none ")
 	}
-	fmt.Printf("= %v points\n", total)
+	fmt.Printf("= %v wins", total)
 
 	return total
 }
@@ -87,6 +119,7 @@ func getScratchCard(line string) scratchCard {
 
 	sid := strings.TrimSpace(t[0][5:])
 	c.id, _ = strconv.Atoi(sid)
+	c.total = 1
 
 	t = strings.Split(t[1], " | ")
 
@@ -116,6 +149,7 @@ type scratchCard struct {
 	id      int
 	winning numbers
 	play    numbers
+	total   int
 }
 
 type game []scratchCard
