@@ -7,7 +7,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/internal/app",
-            "args": ["-day", "4", "-part", "2"],
+            "args": ["-day", "5", "-part", "1"],
             "cwd": "${workspaceFolder}"
         }
     ]
