@@ -20,37 +20,22 @@
  *  THE SOFTWARE.
  */
 
-package structs
+package Day01
 
 import (
-	"github.com/juan-medina/adventofcode2023/internal/utils"
+	"testing"
+
+	"github.com/juan-medina/adventofcode2023/internal/_test"
 )
 
-type DaySolver interface {
-	Run(day int, part int) error
-}
-
-type Solver interface {
-	Solve(input []string, part int) ([]string, error)
-}
-
-type BasicSolver struct {
-	DaySolver
-}
-
-func (obj BasicSolver) BasicRun(solver Solver, day int, part int) error {
-	inputData, err := utils.GetFile(day, part, "input")
-
-	if err != nil {
-		return err
+func Test_Day01_Part_1(t *testing.T) {
+	if err := _test.TestSolver(New(), 1, 1); err != nil {
+		t.Errorf("fail to get file: %v", err)
 	}
+}
 
-	utils.OutputStringSlice("input data:", inputData)
-
-	solved, err := solver.Solve(inputData, part)
-	if err == nil {
-		utils.OutputStringSlice("solution:", solved)
+func Test_Day01_Part_2(t *testing.T) {
+	if err := _test.TestSolver(New(), 1, 2); err != nil {
+		t.Errorf("fail to get file: %v", err)
 	}
-
-	return err
 }

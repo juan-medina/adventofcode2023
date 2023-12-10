@@ -4,16 +4,10 @@ Day exercises for [Advent of Code 2023](https://adventofcode.com/2023) done in [
 
 ## Run via makefile
 
-### specific day
+### Run specific day & part
 ```sh
 make run DAY="1" PART="2"
 ```
-
-### solution test
-```sh
-make run DAY="1" PART="2" TEST="true"
-```
-
 ## Run the compiled binary
 
 First build the binary with
@@ -22,14 +16,20 @@ First build the binary with
 make build
 ```
 
-### specific day
+### Run an specific day and part
 ```sh
 ./build/adventofcode2023 -day 1 -part 1
 ```
+## Run the tests
 
-### solution test
+### Run the tests for all days
 ```sh
-./build/adventofcode2023 -day 1 -part 1 -test
+make test
+```
+
+### Run the tests for an specific day
+```sh
+make test DAY="1"
 ```
 
 ## Additional make commands
@@ -41,7 +41,7 @@ make build
 
 ## VS Code
 
-Include a `launch.json` that allow to debug in VS Code, change the parameters for different days or test
+Include a `launch.json` that allow to debug in VS Code, change the parameters for different days
 
 ```json
 {
@@ -53,12 +53,14 @@ Include a `launch.json` that allow to debug in VS Code, change the parameters fo
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/internal/app",
-            "args": ["-day", "1", "-part", "1", "-test"],
+            "args": ["-day", "1", "-part", "1"],
             "cwd": "${workspaceFolder}"
         }
     ]
 }
 ```
+
+You can also debug the test for any part
 
 ## LICENSE
 ```

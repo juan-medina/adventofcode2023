@@ -34,7 +34,6 @@ func main() {
 
 	day := flag.Int("day", 0, "what day to run")
 	part := flag.Int("part", 1, "what part to run 1 or 2")
-	test := flag.Bool("test", false, "test or normal run")
 
 	flag.Parse()
 
@@ -50,13 +49,9 @@ func main() {
 		return
 	}
 
-	if *test {
-		fmt.Printf("running : day: %v [part: %v] TEST\n", *day, *part)
-	} else {
-		fmt.Printf("running : day: %v [part: %v]\n", *day, *part)
-	}
+	fmt.Printf("running : day: %v [part: %v]\n", *day, *part)
 
-	err := days[*day-1].Run(*day, *part, *test)
+	err := days[*day-1].Run(*day, *part)
 	if err != nil {
 		fmt.Printf("error running example : %v", err.Error())
 		os.Exit(1)

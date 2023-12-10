@@ -17,8 +17,8 @@ func New() Day04 {
 	return Day04{}
 }
 
-func (obj Day04) Run(day int, part int, test bool) error {
-	return obj.BasicSolver.BasicRun(obj, day, part, test)
+func (obj Day04) Run(day int, part int) error {
+	return obj.BasicSolver.BasicRun(obj, day, part)
 }
 
 func (obj Day04) Solve(input []string, part int) ([]string, error) {

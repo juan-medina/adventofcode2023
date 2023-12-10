@@ -28,12 +28,8 @@ import (
 	"strings"
 )
 
-func GetFile(day int, part int, test bool, name string) ([]string, error) {
-	test_append := ""
-	if test {
-		test_append = "test_"
-	}
-	filename := fmt.Sprintf("data/day_%02d_part_%02d_%v%v.txt", day, part, test_append,name )
+func GetFile(day int, part int, name string) ([]string, error) {
+	filename := fmt.Sprintf("data/day_%02d_part_%02d_%v.txt", day, part, name)
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -42,15 +38,15 @@ func GetFile(day int, part int, test bool, name string) ([]string, error) {
 }
 
 func CompareStringSlices(s1, s2 []string) bool {
-    if len(s1) != len(s2) {
-        return false
-    }
-    for i := range s1 {
-        if s1[i] != s2[i] {
-            return false
-        }
-    }
-    return true
+	if len(s1) != len(s2) {
+		return false
+	}
+	for i := range s1 {
+		if s1[i] != s2[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func OutputStringSlice(label string, strings []string) {

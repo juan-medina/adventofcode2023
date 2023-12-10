@@ -20,37 +20,59 @@
  *  THE SOFTWARE.
  */
 
-package structs
+package _test
 
 import (
+	"fmt"
+	"os"
+	"path"
+	"testing"
+
+	"github.com/juan-medina/adventofcode2023/internal/structs"
 	"github.com/juan-medina/adventofcode2023/internal/utils"
 )
 
-type DaySolver interface {
-	Run(day int, part int) error
-}
+func TestSolver(s structs.Solver, day int, part int) error {
 
-type Solver interface {
-	Solve(input []string, part int) ([]string, error)
-}
+	wd, _ := os.Getwd()
+	os.Chdir(path.Join(wd, "../../internal/_test"))
+	defer os.Chdir(wd)
 
-type BasicSolver struct {
-	DaySolver
-}
-
-func (obj BasicSolver) BasicRun(solver Solver, day int, part int) error {
-	inputData, err := utils.GetFile(day, part, "input")
+	i, err := utils.GetFile(day, part, "input")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("fail to get file: %v", err)
 	}
 
-	utils.OutputStringSlice("input data:", inputData)
+	got, err := s.Solve(i, part)
 
-	solved, err := solver.Solve(inputData, part)
+	if err != nil {
+		return fmt.Errorf("fail to get result: %v", err)
+	}
+
+	expect, err := utils.GetFile(day, part, "solution")
+
+	if err != nil {
+		return fmt.Errorf("fail to get file: %v", err)
+	}
+
+	if !utils.CompareStringSlices(got, expect) {
+		return fmt.Errorf("solving error, expect: %v, got %v", expect, got)
+	}
+	return nil
+}
+
+func init() {
+	fmt.Println("Executing global test setup...")
+	cwd, err := os.Getwd()
 	if err == nil {
-		utils.OutputStringSlice("solution:", solved)
+		np := path.Join(cwd, "../../..")
+		os.Chdir(np)
 	}
+}
 
-	return err
+func TestGlobalSetup(t *testing.T) {
+	// This test function will not run actual tests,
+	// but the init() function will be executed
+	// before any tests when `go test` is called
 }

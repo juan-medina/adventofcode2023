@@ -28,6 +28,7 @@ GORUN=$(GOCMD) run
 GOGET=$(GOCMD) get
 GOVET=$(GOCMD) vet
 GOMOD=$(GOCMD) mod
+GOTEST=$(GOCMD) test
 BUILD_DIR=build
 SCRIPTS_DIR=scripts
 
@@ -43,15 +44,17 @@ APP_PATH="./internal/app"
 
 #ARGS
 
-DAY=1
-PART=1
-TEST=false
-
-ifeq ($(TEST),true)
-	TESTARG="--test"
-else
-	TESTARG=""
+ifndef DAY
+    ifeq ($(MAKECMDGOALS),run)
+        DAY := 1
+    endif
 endif
+
+PART=1
+
+pad_to_two_digits = $(if $(filter 1 2 3 4 5 6 7 8 9,$(firstword $(strip $1))),0$(strip $1),$(strip $1))
+
+TWO_DIGIT_DAY := $(call pad_to_two_digits,$(DAY))
 
 default: build
 
@@ -64,7 +67,13 @@ clean:
 format:
 	$(GOFORMAT) $(APP_PATH)/...
 run: build
-	./$(BINARY_NAME) -day $(DAY) -part $(PART) $(TESTARG)
+	./$(BINARY_NAME) -day $(DAY) -part $(PART)
+test: 
+ifeq ($(DAY),)
+	$(GOTEST) -v "./internal/days/..."
+else
+	$(GOTEST) -v "./internal/days/Day$(TWO_DIGIT_DAY)"
+endif
 update:
 	$(GOGET) -u all
 	$(GOMOD) tidy

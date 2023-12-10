@@ -34,8 +34,8 @@ type Day01 struct {
 	structs.BasicSolver
 }
 
-func (obj Day01) Run(day int, part int, test bool) error {
-	return obj.BasicSolver.BasicRun(obj, day, part, test)
+func (obj Day01) Run(day int, part int) error {
+	return obj.BasicSolver.BasicRun(obj, day, part)
 }
 
 var stringDigits = map[string]int {

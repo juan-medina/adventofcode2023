@@ -34,8 +34,8 @@ type Day02 struct {
 	structs.BasicSolver
 }
 
-func (obj Day02) Run(day int, part int, test bool) error {
-	return obj.BasicSolver.BasicRun(obj, day, part, test)
+func (obj Day02) Run(day int, part int) error {
+	return obj.BasicSolver.BasicRun(obj, day, part)
 }
 
 type ballDraw struct {
