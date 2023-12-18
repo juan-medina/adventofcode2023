@@ -22,12 +22,12 @@ make build
 ```
 ## Run the tests
 
-### Run the tests for all days
+### Run all the test
 ```sh
 make test
 ```
 
-### Run the tests for an specific day
+### Run the tests for an specific day only
 ```sh
 make test DAY="1"
 ```

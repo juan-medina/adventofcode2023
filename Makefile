@@ -70,7 +70,7 @@ run: build
 	./$(BINARY_NAME) -day $(DAY) -part $(PART)
 test: 
 ifeq ($(DAY),)
-	$(GOTEST) -v "./internal/days/..."
+	$(GOTEST) -v "./internal/..."
 else
 	$(GOTEST) -v "./internal/days/Day$(TWO_DIGIT_DAY)"
 endif
