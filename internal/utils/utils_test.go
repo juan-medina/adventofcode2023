@@ -23,6 +23,7 @@
 package utils
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 )
@@ -106,128 +107,178 @@ func TestNewRangesFromPairsSlice(t *testing.T) {
 	}
 }
 
-// EXAMPLES
-//  1: FULL OUT LEFT
-/// THIS    1 2
-/// OTHER       3 4 5 6 7
-/// IN
-/// OUT     1 2
-
-// 2: FULL OUT RIGHT
-/// THIS                  8 9
-/// OTHER       3 4 5 6 7
-/// IN
-/// OUT                   8 9
-
-// 3: FULL OTHER COVER BY THIS
-/// THIS    1 2 3 4 5 6 7
-/// OTHER       3 4 5
-/// IN          3 4 5
-/// OUT     1 2       6 7
-
-// 4: FULL OTHER ARE SAME
-/// THIS        3 4 5
-/// OTHER       3 4 5
-/// IN          3 4 5
-/// OUT
-
-// 5: FULL THIS COVER BY OTHER
-/// THIS        3 4 5
-/// OTHER   1 2 3 4 5 6 7
-/// IN          3 4 5
-/// OUT
-
-// 6: PARTIAL THIS LEFT
-/// THIS    1 2 3 4
-/// OTHER       3 4 5 6 7
-/// IN          3 4
-/// OUT     1 2
-
-// PARTIAL THIS RIGHT
-/// THIS              6 7 8 9
-/// OTHER   1 2 3 4 5 6 7
-/// IN                6 7
-/// OUT                   8 9
-
 func TestRangeInOut(t *testing.T) {
 	testCases := []struct {
+		name   string
 		range1 Ranges
 		range2 Ranges
 		in     []Ranges
 		out    []Ranges
 	}{
-		// Test case 1: FULL OUT LEFT
 		{
+			name:   "FULL OUT LEFT",
 			range1: Ranges{from: 1, length: 2},
 			range2: Ranges{from: 3, length: 5},
 			in:     []Ranges{},
 			out:    []Ranges{{1, 2}},
 		},
-		// Test case 2: FULL OUT RIGHT
 		{
+			name:   "FULL OUT RIGHT",
 			range1: Ranges{from: 8, length: 2},
 			range2: Ranges{from: 3, length: 5},
 			in:     []Ranges{},
 			out:    []Ranges{{8, 2}},
 		},
-		// Test case 3: FULL OTHER COVERED BY THIS
 		{
+			name:   "FULL OTHER COVERED BY THIS",
 			range1: Ranges{from: 1, length: 7},
 			range2: Ranges{from: 3, length: 3},
 			in:     []Ranges{{3, 3}},
 			out:    []Ranges{{1, 2}, {6, 2}},
 		},
-		// Test case 4: FULL OTHER ARE SAME
 		{
+			name:   "FULL OTHER ARE SAME",
 			range1: Ranges{from: 3, length: 3},
 			range2: Ranges{from: 3, length: 3},
 			in:     []Ranges{{3, 3}},
 			out:    []Ranges{},
 		},
-		// Test case 5: FULL THIS COVER BY OTHER
 		{
+			name:   "FULL THIS COVER BY OTHER",
 			range1: Ranges{from: 3, length: 3},
 			range2: Ranges{from: 1, length: 7},
 			in:     []Ranges{{3, 3}},
 			out:    []Ranges{},
 		},
-		// Test case 6: PARTIAL THIS LEFT
 		{
+			name:   "PARTIAL THIS LEFT",
 			range1: Ranges{from: 1, length: 4},
 			range2: Ranges{from: 3, length: 3},
 			in:     []Ranges{{3, 2}},
 			out:    []Ranges{{1, 2}},
 		},
-		// Test case 7: PARTIAL THIS RIGHT
 		{
+			name:   "PARTIAL THIS RIGHT",
 			range1: Ranges{from: 6, length: 4},
 			range2: Ranges{from: 1, length: 7},
 			in:     []Ranges{{6, 2}},
 			out:    []Ranges{{8, 2}},
 		},
+		{
+			name:   "THIS SINGLE ITEM IN",
+			range1: Ranges{from: 1, length: 1},
+			range2: Ranges{from: 1, length: 1},
+			in:     []Ranges{{1, 1}},
+			out:    []Ranges{},
+		},
+		{
+			name:   "THIS SINGLE ITEM OUT LEFT",
+			range1: Ranges{from: 1, length: 1},
+			range2: Ranges{from: 3, length: 1},
+			in:     []Ranges{},
+			out:    []Ranges{{1, 1}},
+		},
+		{
+			name:   "THIS SINGLE ITEM OUT RIGHT",
+			range1: Ranges{from: 5, length: 1},
+			range2: Ranges{from: 3, length: 1},
+			in:     []Ranges{},
+			out:    []Ranges{{5, 1}},
+		},
+		{
+			name:   "OTHER SINGLE ITEM OUT LEFT",
+			range1: Ranges{from: 2, length: 2},
+			range2: Ranges{from: 1, length: 1},
+			in:     []Ranges{},
+			out:    []Ranges{{2, 2}},
+		},
+		{
+			name:   "OTHER SINGLE ITEM OUT RIGHT",
+			range1: Ranges{from: 2, length: 2},
+			range2: Ranges{from: 3, length: 1},
+			in:     []Ranges{{3, 1}},
+			out:    []Ranges{{2, 1}},
+		},
+		{
+			name:   "OTHER SINGLE ITEM IN",
+			range1: Ranges{from: 1, length: 3},
+			range2: Ranges{from: 2, length: 1},
+			in:     []Ranges{{2, 1}},
+			out:    []Ranges{{1, 1}, {3, 1}},
+		},
+        {
+            name : "FAR THIS LEFT",
+            range1: Ranges{from: 1, length: 3},
+            range2: Ranges{from: 4, length: 3},
+            in:    []Ranges{},
+            out:   []Ranges{{1, 3}},
+        },
+        {
+            name : "FAR THIS LEFT SINGLE",
+            range1: Ranges{from: 1, length: 1},
+            range2: Ranges{from: 4, length: 3},
+            in:    []Ranges{},
+            out:   []Ranges{{1, 1}},
+        },
+        {
+            name : "FAR THIS LEFT SINGLE OTHER",
+            range1: Ranges{from: 1, length: 3},
+            range2: Ranges{from: 6, length: 1},
+            in:    []Ranges{},
+            out:   []Ranges{{1, 3}},
+        },        
+        {
+            name : "FAR THIS RIGHT",
+            range1: Ranges{from: 7, length: 3},
+            range2: Ranges{from: 4, length: 3},
+            in:    []Ranges{},
+            out:   []Ranges{{7, 3}},
+        },
+        {
+            name : "FAR THIS LEFT SINGLE",
+            range1: Ranges{from: 7, length: 1},
+            range2: Ranges{from: 4, length: 3},
+            in:    []Ranges{},
+            out:   []Ranges{{7, 1}},
+        },
+        {
+            name : "FAR THIS LEFT SINGLE OTHER",
+            range1: Ranges{from: 7, length: 3},
+            range2: Ranges{from: 4, length: 1},
+            in:    []Ranges{},
+            out:   []Ranges{{7, 3}},
+        },        
 	}
 
 	for i, testCase := range testCases {
-		got := testCase.range1.In(testCase.range2)
-		if len(got) != len(testCase.in) {
-			t.Fatalf("Case %d: Expected %v in, got %v", i+1, testCase.in, got)
-		} else {
-			for j := range got {
-				if !CompareIntSlices(got[j].ToSlice(), testCase.in[j].ToSlice()) {
-					t.Fatalf("Case %d: Expected %v in, got %v", i+1, testCase.in, got)
+		t.Run(fmt.Sprintf("Case %d: %s In Check", i+1, testCase.name), func(t *testing.T) {
+			got := testCase.range1.In(testCase.range2)
+			if len(got) != len(testCase.in) {
+				t.Fatalf("Case %d: Expected %v in, got %v, range 1 = %v, range 2 = %v",
+					i+1, testCase.in, got, testCase.range1.ToSlice(), testCase.range2.ToSlice())
+			} else {
+				for j := range got {
+					if !CompareIntSlices(got[j].ToSlice(), testCase.in[j].ToSlice()) {
+						t.Fatalf("Case %d: Expected %v in, got %v, range 1 = %v, range 2 = %v",
+							i+1, testCase.in, got, testCase.range1.ToSlice(), testCase.range2.ToSlice())
+					}
 				}
 			}
-		}
+		})
+		t.Run(fmt.Sprintf("Case %d: %s Out Check", i+1, testCase.name), func(t *testing.T) {
+			got := testCase.range1.Out(testCase.range2)
+			if len(got) != len(testCase.out) {
+				t.Fatalf("Case %d: Expected %v out, got %v, range 1 = %v, range 2 = %v",
+					i+1, testCase.out, got, testCase.range1.ToSlice(), testCase.range2.ToSlice())
+			} else {
+				for j := range got {
+					if !CompareIntSlices(got[j].ToSlice(), testCase.out[j].ToSlice()) {
+						t.Fatalf("Case %d: Expected %v out, got %v, range 1 = %v, range 2 = %v",
+							i+1, testCase.out, got, testCase.range1.ToSlice(), testCase.range2.ToSlice())
+					}
+				}
+			}
+		})
 
-		got = testCase.range1.Out(testCase.range2)
-		if len(got) != len(testCase.out) {
-			t.Fatalf("Case %d: Expected %v out, got %v", i+1, testCase.out, got)
-		} else {
-			for j := range got {
-				if !CompareIntSlices(got[j].ToSlice(), testCase.out[j].ToSlice()) {
-					t.Fatalf("Case %d: Expected %v out, got %v", i+1, testCase.out, got)
-				}
-			}
-		}
 	}
 }

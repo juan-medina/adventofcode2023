@@ -116,7 +116,7 @@ func (r Ranges) Out(other Ranges) []Ranges {
 		} else {
 
 			// check if other is inside this
-			if other.from >= r.from && other.from+other.length <= r.from+r.length {
+			if other.from >= r.from && other.from+other.length < r.from+r.length {
 				// we are in the middle, we need to split in two
 				left := Ranges{r.from, other.from - r.from}
 				right := Ranges{other.from + other.length, r.from + r.length - (other.from + other.length)}
