@@ -38,7 +38,7 @@ func (obj Day01) Run(day int, part int) error {
 	return obj.BasicSolver.BasicRun(obj, day, part)
 }
 
-var stringDigits = map[string]int {
+var stringDigits = map[string]int{
 	"one":   1,
 	"two":   2,
 	"three": 3,
@@ -57,9 +57,9 @@ func getNumber(line string, index int) (int, error) {
 		return int(digit - '0'), nil
 	}
 
-	for key := range stringDigits {		
+	for key := range stringDigits {
 		keyLength := len(key)
-		lastIndex := index+keyLength		
+		lastIndex := index + keyLength
 
 		if (lastIndex) < lineLength {
 			token := line[index:lastIndex]
@@ -75,7 +75,7 @@ func getNumber(line string, index int) (int, error) {
 func findFirstDigit(line string) int {
 	for i := range line {
 		number, err := getNumber(line, i)
-		if err== nil {
+		if err == nil {
 			return number
 		}
 	}
@@ -86,7 +86,7 @@ func findLastDigit(line string) int {
 	len := len(line)
 	for i := range line {
 		number, err := getNumber(line, len-i-1)
-		if err== nil {
+		if err == nil {
 			return number
 		}
 	}

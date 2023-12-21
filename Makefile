@@ -61,11 +61,11 @@ default: build
 build: clean
 	$(GOBUILD) -o $(BINARY_NAME) -v $(APP_PATH)
 vet:
-	$(GOVET) $(APP_PATH)/...
+	$(GOVET) "./internal/..."
 clean:
 	$(GOCLEAN) $(APP_PATH)
 format:
-	$(GOFORMAT) $(APP_PATH)/...
+	$(GOFORMAT) "./internal/..."
 run: build
 	./$(BINARY_NAME) -day $(DAY) -part $(PART)
 test: 

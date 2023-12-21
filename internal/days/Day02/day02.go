@@ -204,5 +204,5 @@ func (obj Day02) Solve(input []string, part int) ([]string, error) {
 }
 
 func New() Day02 {
-	return Day02{}	
+	return Day02{}
 }
