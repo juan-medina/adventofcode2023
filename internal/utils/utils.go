@@ -25,6 +25,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -153,4 +154,45 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func mergeRanges(input []Ranges) []Ranges {
+	// if we have less than 2 ranges, we can't merge them, return the input
+	if len(input) <= 1 {
+		return input
+	}
+
+	// Sort the input slice based on the 'from' value of each range
+	sort.Slice(input, func(i, j int) bool {
+		return input[i].from < input[j].from
+	})
+
+	merged := make([]Ranges, 0)
+
+	// Add the first range to the merged slice
+	merged = append(merged, input[0])
+
+	// iterate over the rest of the ranges
+	for i := 1; i < len(input); i++ {
+		// get the last range in the merged slice
+		lastMerged := &merged[len(merged)-1]
+
+		//check if the current range is full inside the last merged range
+		if input[i].from >= lastMerged.from && input[i].from+input[i].length <= lastMerged.from+lastMerged.length {
+			continue
+		}
+
+		// check if the current range collides with the last merged range or is adjacent
+		if lastMerged.from+lastMerged.length >= input[i].from {
+			// calculate the new end
+			end := max(input[i].from+input[i].length, lastMerged.from+lastMerged.length)
+			// update the last merged range with the new end
+			lastMerged.length = end - lastMerged.from
+		} else {
+			// add the current range to the merged slice
+			merged = append(merged, input[i])
+		}
+	}
+
+	return merged
 }

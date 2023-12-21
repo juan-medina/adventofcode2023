@@ -24,6 +24,7 @@ package utils
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"testing"
 )
@@ -206,48 +207,48 @@ func TestRangeInOut(t *testing.T) {
 			in:     []Ranges{{2, 1}},
 			out:    []Ranges{{1, 1}, {3, 1}},
 		},
-        {
-            name : "FAR THIS LEFT",
-            range1: Ranges{from: 1, length: 3},
-            range2: Ranges{from: 4, length: 3},
-            in:    []Ranges{},
-            out:   []Ranges{{1, 3}},
-        },
-        {
-            name : "FAR THIS LEFT SINGLE",
-            range1: Ranges{from: 1, length: 1},
-            range2: Ranges{from: 4, length: 3},
-            in:    []Ranges{},
-            out:   []Ranges{{1, 1}},
-        },
-        {
-            name : "FAR THIS LEFT SINGLE OTHER",
-            range1: Ranges{from: 1, length: 3},
-            range2: Ranges{from: 6, length: 1},
-            in:    []Ranges{},
-            out:   []Ranges{{1, 3}},
-        },        
-        {
-            name : "FAR THIS RIGHT",
-            range1: Ranges{from: 7, length: 3},
-            range2: Ranges{from: 4, length: 3},
-            in:    []Ranges{},
-            out:   []Ranges{{7, 3}},
-        },
-        {
-            name : "FAR THIS LEFT SINGLE",
-            range1: Ranges{from: 7, length: 1},
-            range2: Ranges{from: 4, length: 3},
-            in:    []Ranges{},
-            out:   []Ranges{{7, 1}},
-        },
-        {
-            name : "FAR THIS LEFT SINGLE OTHER",
-            range1: Ranges{from: 7, length: 3},
-            range2: Ranges{from: 4, length: 1},
-            in:    []Ranges{},
-            out:   []Ranges{{7, 3}},
-        },        
+		{
+			name:   "FAR THIS LEFT",
+			range1: Ranges{from: 1, length: 3},
+			range2: Ranges{from: 4, length: 3},
+			in:     []Ranges{},
+			out:    []Ranges{{1, 3}},
+		},
+		{
+			name:   "FAR THIS LEFT SINGLE",
+			range1: Ranges{from: 1, length: 1},
+			range2: Ranges{from: 4, length: 3},
+			in:     []Ranges{},
+			out:    []Ranges{{1, 1}},
+		},
+		{
+			name:   "FAR THIS LEFT SINGLE OTHER",
+			range1: Ranges{from: 1, length: 3},
+			range2: Ranges{from: 6, length: 1},
+			in:     []Ranges{},
+			out:    []Ranges{{1, 3}},
+		},
+		{
+			name:   "FAR THIS RIGHT",
+			range1: Ranges{from: 7, length: 3},
+			range2: Ranges{from: 4, length: 3},
+			in:     []Ranges{},
+			out:    []Ranges{{7, 3}},
+		},
+		{
+			name:   "FAR THIS LEFT SINGLE",
+			range1: Ranges{from: 7, length: 1},
+			range2: Ranges{from: 4, length: 3},
+			in:     []Ranges{},
+			out:    []Ranges{{7, 1}},
+		},
+		{
+			name:   "FAR THIS LEFT SINGLE OTHER",
+			range1: Ranges{from: 7, length: 3},
+			range2: Ranges{from: 4, length: 1},
+			in:     []Ranges{},
+			out:    []Ranges{{7, 3}},
+		},
 	}
 
 	for i, testCase := range testCases {
@@ -280,5 +281,101 @@ func TestRangeInOut(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestMergeRanges(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []Ranges
+		expected []Ranges
+	}{
+		{
+			name: "Non-overlapping ranges",
+			input: []Ranges{
+				{from: 1, length: 2},
+				{from: 5, length: 3},
+				{from: 10, length: 4},
+			},
+			expected: []Ranges{
+				{from: 1, length: 2},
+				{from: 5, length: 3},
+				{from: 10, length: 4},
+			},
+		},
+		{
+			name: "Overlapping ranges",
+			input: []Ranges{
+				{from: 1, length: 3},
+				{from: 2, length: 2},
+				{from: 4, length: 4},
+			},
+			expected: []Ranges{
+				{from: 1, length: 7},
+			},
+		},
+		{
+			name: "Contained ranges",
+			input: []Ranges{
+				{from: 1, length: 10},
+				{from: 3, length: 6},
+			},
+			expected: []Ranges{
+				{from: 1, length: 10},
+			},
+		},
+		{
+			name: "Repeated ranges",
+			input: []Ranges{{from: 5, length: 3},
+				{from: 10, length: 4},
+				{from: 5, length: 3}, // Repeated range
+				{from: 1, length: 4}, // Same start but different length
+			},
+			expected: []Ranges{
+				{from: 1, length: 7},
+				{from: 10, length: 4},
+			},
+		},
+		{
+			name: "Ranges with length of 1",
+			input: []Ranges{
+				{from: 1, length: 1},
+				{from: 2, length: 1},
+				{from: 3, length: 1},
+			},
+			expected: []Ranges{
+				{from: 1, length: 3},
+			},
+		},
+		{
+			name:     "Empty input",
+			input:    []Ranges{},
+			expected: []Ranges{},
+		},
+		{
+			name: "Single range",
+			input: []Ranges{
+				{from: 1, length: 5},
+			},
+			expected: []Ranges{
+				{from: 1, length: 5},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := mergeRanges(tc.input)
+			sort.Slice(result, func(i, j int) bool {
+				if result[i].from == result[j].from {
+					return result[i].length < result[j].length
+				}
+				return result[i].from < result[j].from
+			})
+
+			if !reflect.DeepEqual(result, tc.expected) {
+				t.Fatalf("Failed for input %v. Expected: %v, Got: %v", tc.input, tc.expected, result)
+			}
+		})
 	}
 }
