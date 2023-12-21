@@ -94,9 +94,14 @@ func (r Ranges) ToSlice() []int {
 	return slice
 }
 
+//go:inline
+func (r Ranges) End() int {
+	return r.from + r.length
+}
+
 func (r Ranges) In(other Ranges) []Ranges {
 	start := max(r.from, other.from)
-	end := min(r.from+r.length, other.from+other.length)
+	end := min(r.End(), other.End())
 
 	if start >= end {
 		return nil
@@ -109,18 +114,18 @@ func (r Ranges) Out(other Ranges) []Ranges {
 	out := []Ranges{}
 
 	// check if this range is not full inside other
-	if r.from < other.from || r.from+r.length > other.from+other.length {
+	if r.from < other.from || r.End() > other.End() {
 		// check if this range is not colliding with other
-		if r.from+r.length <= other.from || r.from >= other.from+other.length {
+		if r.End() <= other.from || r.from >= other.End() {
 			// add this range to the output
 			out = append(out, r)
 		} else {
 
 			// check if other is inside this
-			if other.from >= r.from && other.from+other.length < r.from+r.length {
+			if other.from >= r.from && other.End() < r.End() {
 				// we are in the middle, we need to split in two
 				left := Ranges{r.from, other.from - r.from}
-				right := Ranges{other.from + other.length, r.from + r.length - (other.from + other.length)}
+				right := Ranges{other.End(), r.End() - (other.End())}
 
 				out = append(out, left, right)
 			} else {
@@ -131,8 +136,8 @@ func (r Ranges) Out(other Ranges) []Ranges {
 				}
 
 				// check if we collide with the right side
-				if r.from+r.length > other.from {
-					out = append(out, Ranges{other.from + other.length, r.from + r.length - (other.from + other.length)})
+				if r.End() > other.from {
+					out = append(out, Ranges{other.End(), r.End() - (other.End())})
 					return out
 				}
 			}
@@ -178,14 +183,14 @@ func mergeRanges(input []Ranges) []Ranges {
 		lastMerged := &merged[len(merged)-1]
 
 		//check if the current range is full inside the last merged range
-		if input[i].from >= lastMerged.from && input[i].from+input[i].length <= lastMerged.from+lastMerged.length {
+		if input[i].from >= lastMerged.from && input[i].End() <= lastMerged.End() {
 			continue
 		}
 
 		// check if the current range collides with the last merged range or is adjacent
-		if lastMerged.from+lastMerged.length >= input[i].from {
+		if lastMerged.End() >= input[i].from {
 			// calculate the new end
-			end := max(input[i].from+input[i].length, lastMerged.from+lastMerged.length)
+			end := max(input[i].End(), lastMerged.End())
 			// update the last merged range with the new end
 			lastMerged.length = end - lastMerged.from
 		} else {
